@@ -8,6 +8,8 @@ def about(request):
     return render(request, 'about.html')
 
 def judge_dashboard(request):
-    # Fetch all cases, optimized with related party info and validation result
     cases = Case.objects.select_related('plaintiff', 'validation_result').order_by('-submission_date')
     return render(request, 'judge_dashboard.html', {'cases': cases})
+
+def success_page(request):
+    return render(request, 'success.html')

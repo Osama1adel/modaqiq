@@ -119,21 +119,18 @@ async function submitCase() {
 
         const result = await response.json();
 
-        // 4. Render Dashboard
-        renderDashboard(result);
+        if (!response.ok) {
+            throw new Error(result.error || JSON.stringify(result));
+        }
+
+        // 4. Redirect to Success Page
+        window.location.href = "/success/";
 
     } catch (error) {
-        // Fallback for Hackathon Demo if API fails/offline
-        console.error(error);
-        alert("تنبيه: محاكاة لغرض العرض (فشل الاتصال بالخادم)");
-
-        // Mock success for demo flow
-        const mockResult = {
-            status: "ACCEPTED",
-            ai_insight: { generated_reasoning: "بناءً على المعلومات المدخلة، تبين أن الدعوى استوفت شرط التظلم الوجوبي وقدمت خلال الميعاد النظامي (60 يوماً) من تاريخ العلم بالقرار." },
-            validation_details: []
-        };
-        renderDashboard(mockResult);
+        console.error("Submission Error:", error);
+        alert(`عذراً، حدث خطأ أثناء تقديم الطلب:\n${error.message}`);
+        document.getElementById('wizard').classList.remove('hidden');
+        document.getElementById('loading').classList.add('hidden');
     }
 }
 

@@ -63,7 +63,15 @@ class RuleValidator:
         """
         Article 16: 60 days from Knowledge or Grievance Outcome.
         """
-        submission_date = case_data.get('submission_date', date.today())
+        submission_date = case_data.get('submission_date')
+        if not submission_date:
+            submission_date = date.today()
+        elif isinstance(submission_date, str):
+            from datetime import datetime
+            try:
+                submission_date = datetime.strptime(submission_date, "%Y-%m-%d").date()
+            except ValueError:
+                 submission_date = date.today() # Fallback
         
         # The start date for calculation:
         # If there was a grievance, use the grievance outcome date (or date of grievance + 60 days if silent).

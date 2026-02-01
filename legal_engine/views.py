@@ -72,7 +72,7 @@ class CaseViewSet(viewsets.ModelViewSet):
                 )
                 
                 # 7. Update Case Status
-                case.status = Case.CaseStatus.VALIDATED
+                case.status = Case.CaseStatus.PENDING_JUDGE
                 case.save()
                 
                 # 8. Return "Stunning" Response
@@ -95,3 +95,19 @@ class CaseViewSet(viewsets.ModelViewSet):
 
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=True, methods=['post'])
+    def approve_case(self, request, pk=None):
+        case = self.get_object()
+        case.status = Case.CaseStatus.APPROVED
+        case.save()
+        return Response({'status': 'Approved', 'case_id': case.id})
+
+    @action(detail=True, methods=['post'])
+    def reject_case(self, request, pk=None):
+        case = self.get_object()
+        reason = request.data.get('reason', 'No reason provided')
+        # Ideally store reason in a log or field
+        case.status = Case.CaseStatus.REJECTED
+        case.save()
+        return Response({'status': 'Rejected', 'case_id': case.id})

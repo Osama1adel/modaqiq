@@ -42,7 +42,9 @@ class Case(models.Model):
     class CaseStatus(models.TextChoices):
         DRAFT = 'DRAFT', _('Draft')
         SUBMITTED = 'SUBMITTED', _('Submitted')
-        VALIDATED = 'VALIDATED', _('Validated')
+        VALIDATED = 'VALIDATED', _('Validated (AI)') # Initial AI check done
+        PENDING_JUDGE = 'PENDING_JUDGE', _('Pending Judge Approval')
+        APPROVED = 'APPROVED', _('Approved')
         REJECTED = 'REJECTED', _('Rejected')
 
     class RequestType(models.TextChoices):

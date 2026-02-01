@@ -182,6 +182,17 @@
                         <label>تفاصيل الدعوى</label>
                         <textarea name="description" class="glass-input" rows="6" placeholder="اكتب تفاصيل دعواك هنا... سيقوم الذكاء الاصطناعي بتحليلها."></textarea>
                     </div>
+                    <div class="form-group" style="margin-top: 2rem;">
+                        <label>نوع الطلب</label>
+                        <select name="request_type" class="glass-input">
+                            <option value="ADMINISTRATIVE_DECISION">الطعن في قرار إداري</option>
+                            <option value="COMPENSATION">مطالبة بالتعويض</option>
+                        </select>
+                    </div>
+                     <div class="form-group" style="margin-top: 1rem;">
+                        <label>إرفاق المستندات (اختياري)</label>
+                        <input type="file" name="documents" class="glass-input" multiple>
+                    </div>
                     <div class="actions">
                         <button type="button" class="btn-ghost" onclick="prevStep(2)">سابق</button>
                         <button type="button" class="btn-accent" onclick="submitCase()">

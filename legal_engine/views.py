@@ -18,7 +18,18 @@ class CaseViewSet(viewsets.ModelViewSet):
         Main Endpoint: Receives case data -> Saves Draft -> Runs Logic Engine -> Runs Gemini -> Return Result
         """
         # 1. Validate Input Data
-        serializer = self.get_serializer(data=request.data)
+        import json
+        
+        # Check if 'data' field exists (Multipart) or use request.data directly (JSON)
+        if 'data' in request.data:
+             try:
+                 data = json.loads(request.data['data'])
+             except json.JSONDecodeError:
+                 return Response({"error": "Invalid JSON in 'data' field"}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+             data = request.data
+
+        serializer = self.get_serializer(data=data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -26,6 +37,14 @@ class CaseViewSet(viewsets.ModelViewSet):
             with transaction.atomic():
                 # 2. Save Case as Draft
                 case = serializer.save()
+
+                # 2.1 Handle File Uploads
+                files = request.FILES.getlist('documents')
+                if files:
+                    from .models import Document
+                    for f in files:
+                        Document.objects.create(case=case, file=f)
+
 
                 # 3. Serialize again to get full representation for Logic Engine (dates as strings/obj validation)
                 case_data = serializer.data

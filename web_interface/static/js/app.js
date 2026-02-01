@@ -80,6 +80,7 @@ async function submitCase() {
         incident_date: formData.get('incident_date'), // Mapped
         grievance_date: formData.get('grievance_date') || null,
         court_type: "Administrative",
+        request_type: formData.get('request_type'),
         plaintiff: {
             name: formData.get('plaintiff_name'),
             party_type: formData.get('plaintiff_type'),
@@ -92,6 +93,18 @@ async function submitCase() {
         }
     };
 
+    // Append JSON as string
+    const finalFormData = new FormData();
+    finalFormData.append('data', JSON.stringify(payload)); // Send JSON data as a field
+
+    // Append Files
+    const fileInput = document.querySelector('input[name="documents"]');
+    if (fileInput.files.length > 0) {
+        for (let i = 0; i < fileInput.files.length; i++) {
+            finalFormData.append('documents', fileInput.files[i]);
+        }
+    }
+
     // 2. Show Loading
     document.getElementById('wizard').classList.add('hidden');
     document.getElementById('loading').classList.remove('hidden');
@@ -100,10 +113,8 @@ async function submitCase() {
         // 3. Call API
         const response = await fetch('/api/cases/submit_and_validate/', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(payload)
+            // headers: { 'Content-Type': 'multipart/form-data' }, // Let browser set boundary
+            body: finalFormData
         });
 
         const result = await response.json();

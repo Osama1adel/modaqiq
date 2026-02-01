@@ -45,6 +45,10 @@ class Case(models.Model):
         VALIDATED = 'VALIDATED', _('Validated')
         REJECTED = 'REJECTED', _('Rejected')
 
+    class RequestType(models.TextChoices):
+        ADMINISTRATIVE_DECISION = 'ADMINISTRATIVE_DECISION', _('Challenging an administrative decision')
+        COMPENSATION = 'COMPENSATION', _('Claim for compensation') 
+
     title = models.CharField(max_length=255)
     description = models.TextField()
     
@@ -59,6 +63,12 @@ class Case(models.Model):
     
     # Validation Logic
     court_type = models.CharField(max_length=100, help_text="e.g., General, Administrative, Commercial")
+    request_type = models.CharField(
+        max_length=50, 
+        choices=RequestType.choices, 
+        default=RequestType.ADMINISTRATIVE_DECISION,
+        help_text="Type of request: Decision Challenge or Compensation"
+    )
     claim_amount = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
     
     status = models.CharField(max_length=20, choices=CaseStatus.choices, default=CaseStatus.DRAFT)
@@ -87,3 +97,11 @@ class ValidationResult(models.Model):
 
     def __str__(self):
         return f"Result for {self.case.title}: {'Accepted' if self.is_accepted else 'Rejected'}"
+
+class Document(models.Model):
+    case = models.ForeignKey(Case, on_delete=models.CASCADE, related_name='case_documents')
+    file = models.FileField(upload_to='case_documents/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Document for {self.case.title}"

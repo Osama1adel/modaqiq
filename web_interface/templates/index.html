@@ -1,0 +1,265 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مُدقق | المساعد القانوني الذكي</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="background-mesh"></div>
+
+    <!-- Navigation -->
+    <nav class="glass-nav">
+        <div class="logo">
+            <i class="fa-solid fa-scale-balanced"></i>
+            <span>Modqiq</span>
+        </div>
+        <div class="nav-links">
+            <a href="#" class="active">الرئيسية</a>
+            <a href="{% url 'about' %}">عن النظام</a>
+            <a href="{% url 'judge_dashboard' %}" class="btn-login" style="background: var(--glass-bg);">👨‍⚖️ بوابة القاضي</a>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="container">
+        
+        <!-- Hero Section -->
+        <section id="hero" class="hero-section center-content active-section">
+            <div class="hero-text">
+                <h1>العدالة.. <span class="highlight">أصبحت أذكى</span></h1>
+                <p>نظام خبير مدعوم بالذكاء الاصطناعي لتدقيق الدعاوى الإدارية وضمان قبولها الشكلي قبل تقديمها.</p>
+                <button class="btn-primary" onclick="startWizard()">ابدأ التدقيق الآن <i class="fa-solid fa-arrow-left"></i></button>
+            </div>
+            
+            <div class="stats-cards">
+                <div class="glass-card float-anim-1">
+                    <i class="fa-solid fa-check-double"></i>
+                    <span>تدقيق آلي</span>
+                    <small>فحص القبول الشكلي</small>
+                </div>
+                <div class="glass-card float-anim-2">
+                    <i class="fa-solid fa-bolt"></i>
+                    <span>نتائج فورية</span>
+                    <small>تحليل خلال ثوانٍ</small>
+                </div>
+            </div>
+        </section>
+
+        <!-- Wizard Section (Hidden Initially) -->
+        <section id="wizard" class="wizard-section hidden">
+            <div class="wizard-header">
+                <div class="step-indicator">
+                    <div class="step active" data-step="1">1</div>
+                    <div class="line"></div>
+                    <div class="step" data-step="2">2</div>
+                    <div class="line"></div>
+                    <div class="step" data-step="3">3</div>
+                </div>
+                <h2 id="step-title">بيانات الأطراف</h2>
+            </div>
+
+            <form id="caseForm" class="glass-form">
+                <!-- Step 1: Parties -->
+                <div class="form-step active" id="step1">
+                    <div class="form-group">
+                        <label>صفة المدعي</label>
+                        <select name="plaintiff_type" class="glass-input">
+                            <option value="INDIVIDUAL">فرد</option>
+                            <option value="COMPANY">شركة</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>اسم المدعي</label>
+                        <input type="text" name="plaintiff_name" class="glass-input" placeholder="الاسم الرباعي / اسم الشركة">
+                    </div>
+                    <div class="form-group">
+                        <label>الجهة المدعى عليها</label>
+                        <input type="text" name="defendant_name" class="glass-input" placeholder="اسم الجهة الحكومية">
+                    </div>
+                    <div class="actions">
+                        <button type="button" class="btn-primary" onclick="nextStep(2)">التالي</button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Decision & Grievance Details -->
+                <div class="form-step" id="step2">
+                    <!-- Decision Section -->
+                    <h3 style="color: var(--gold); margin-bottom: 1rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 0.5rem;">
+                        <i class="fa-solid fa-file-contract"></i> بيانات القرار الإداري
+                    </h3>
+                    
+                    <div class="row">
+                        <div class="form-group half">
+                            <label>رقم القرار</label>
+                            <input type="text" name="decision_number" class="glass-input">
+                        </div>
+                        <div class="form-group half">
+                            <label>تاريخ القرار</label>
+                            <input type="date" name="decision_date" class="glass-input">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group half">
+                            <label>طريقة العلم بالقرار</label>
+                            <select name="knowledge_method" class="glass-input">
+                                <option value="direct">تبليغ مباشر</option>
+                                <option value="mail">بريد الكتروني</option>
+                                <option value="other">أخرى</option>
+                            </select>
+                        </div>
+                        <div class="form-group half">
+                            <label>تاريخ العلم بالقرار</label>
+                            <input type="date" name="incident_date" class="glass-input"> <!-- Mapped to incident_date -->
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>جهة إصدار القرار</label>
+                         <input type="text" name="defendant_name" class="glass-input" placeholder="مثال: وزارة التعليم">
+                    </div>
+
+                    <!-- Grievance Section -->
+                    <h3 style="color: var(--gold); margin: 1.5rem 0 1rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 0.5rem;">
+                        <i class="fa-solid fa-scale-unbalanced"></i> بيانات التظلم
+                    </h3>
+
+                    <div class="form-group">
+                        <label style="display: block; margin-bottom: 0.5rem;">هل يوجد تظلم سابق؟</label>
+                        <div style="display: flex; gap: 20px;">
+                            <label style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                                <input type="radio" name="has_grievance" value="yes" checked onclick="toggleGrievance(true)"> يوجد تظلم
+                            </label>
+                            <label style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                                <input type="radio" name="has_grievance" value="no" onclick="toggleGrievance(false)"> لا يوجد تظلم
+                            </label>
+                        </div>
+                    </div>
+
+                    <div id="grievance-fields">
+                        <div class="row">
+                            <div class="form-group half">
+                                <label>رقم التظلم</label>
+                                <input type="text" name="grievance_number" class="glass-input">
+                            </div>
+                            <div class="form-group half">
+                                <label>تاريخ التظلم</label>
+                                <input type="date" name="grievance_date" class="glass-input">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>الجهة المتظلم لها</label>
+                            <input type="text" name="grievance_authority" class="glass-input">
+                        </div>
+
+                        <div class="row">
+                            <div class="form-group half">
+                                <label>تاريخ البت في التظلم</label>
+                                <input type="date" name="grievance_outcome_date" class="glass-input">
+                            </div>
+                            <div class="form-group half">
+                                <label>نتيجة التظلم</label>
+                                <input type="text" name="grievance_outcome" class="glass-input">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="actions">
+                        <button type="button" class="btn-ghost" onclick="prevStep(1)">سابق</button>
+                        <button type="button" class="btn-primary" onclick="nextStep(3)">التالي</button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Description -->
+                <div class="form-step" id="step3">
+                    <div class="form-group">
+                        <label>تفاصيل الدعوى</label>
+                        <textarea name="description" class="glass-input" rows="6" placeholder="اكتب تفاصيل دعواك هنا... سيقوم الذكاء الاصطناعي بتحليلها."></textarea>
+                    </div>
+                    <div class="form-group" style="margin-top: 2rem;">
+                        <label>نوع الطلب</label>
+                        <select name="request_type" class="glass-input">
+                            <option value="ADMINISTRATIVE_DECISION">الطعن في قرار إداري</option>
+                            <option value="COMPENSATION">مطالبة بالتعويض</option>
+                        </select>
+                    </div>
+                     <div class="form-group" style="margin-top: 1rem;">
+                        <label>إرفاق المستندات (اختياري)</label>
+                        <input type="file" name="documents" class="glass-input" multiple>
+                    </div>
+                    <div class="actions">
+                        <button type="button" class="btn-ghost" onclick="prevStep(2)">سابق</button>
+                        <button type="button" class="btn-accent" onclick="submitCase()">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> تدقيق ذكي
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </section>
+        
+        <!-- Loading State -->
+        <section id="loading" class="loading-section hidden">
+            <div class="loader">
+                <div class="scanner"></div>
+            </div>
+            <h3>جاري تحليل البيانات عبر Gemini API...</h3>
+            <p id="loading-text">التحقق من المدد النظامية...</p>
+        </section>
+
+        <!-- Result Dashboard (Hidden) -->
+        <section id="dashboard" class="dashboard-section hidden">
+            <div class="dashboard-header">
+                <div class="status-badge" id="final-status">
+                    <!-- JS will fill this -->
+                </div>
+                <h2>تقرير التدقيق الآلي</h2>
+            </div>
+            
+            <div class="dashboard-grid">
+                <!-- AI Reasoning Card -->
+                <div class="glass-card wide">
+                    <div class="card-header">
+                        <i class="fa-solid fa-robot"></i>
+                        <h3>التسبيب الذكي (Gemini)</h3>
+                    </div>
+                    <div class="card-body" id="ai-reasoning-body">
+                        <!-- AI Text goes here -->
+                    </div>
+                </div>
+
+                <!-- Timeline / Procedural Check -->
+                <div class="glass-card">
+                    <div class="card-header">
+                        <i class="fa-solid fa-clock"></i>
+                        <h3>التحقق الإجرائي</h3>
+                    </div>
+                    <ul class="check-list" id="validation-list">
+                        <!-- Items go here -->
+                    </ul>
+                </div>
+                
+                <!-- Action Card -->
+                <div class="glass-card action-card">
+                    <div class="card-header">
+                        <i class="fa-solid fa-flag"></i>
+                        <h3>التوصية التالية</h3>
+                    </div>
+                    <div class="action-body">
+                         <h4 id="next-action-title">--</h4>
+                         <button class="btn-primary" onclick="location.reload()">تدقيق دعوى أخرى</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="{% static 'js/app.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,361 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بوابة القاضي | Modqiq</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .dashboard-container {
+            padding: 2rem 5%;
+        }
+        
+        .dashboard-header-page {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .refresh-btn {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid var(--glass-border);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .refresh-btn:hover { background: rgba(255,255,255,0.2); }
+
+        .cases-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .case-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .case-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .case-status {
+            position: absolute;
+            top: 1rem; left: 1rem;
+            padding: 0.25rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        .status-VALIDATED { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid #34d399; }
+        .status-APPROVED { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid #34d399; }
+        .status-PENDING_JUDGE { background: rgba(251, 191, 36, 0.2); color: #fbbf24; border: 1px solid #fbbf24; }
+        .status-REJECTED { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid #f87171; }
+        .status-DRAFT { background: rgba(148, 163, 184, 0.2); color: #94a3b8; border: 1px solid #94a3b8; }
+
+        .actions-bar {
+            margin-top: 1.5rem;
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .btn-action {
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: 0.3s;
+        }
+
+        .btn-approve {
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+        }
+        .btn-approve:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3); }
+
+        .btn-reject {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.5);
+            color: #f87171;
+        }
+        .btn-reject:hover { background: rgba(239, 68, 68, 0.2); }
+
+        .case-title { font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--gold); }
+        .case-meta { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem; }
+        
+        .decision-box {
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            border-right: 3px solid var(--primary);
+        }
+        
+        /* New Audit Report Styles */
+        .audit-card {
+            padding: 0;
+            background: linear-gradient(145deg, rgba(23, 37, 84, 0.4), rgba(15, 23, 42, 0.6));
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .audit-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .audit-report-container {
+            padding: 1.5rem;
+        }
+
+        .report-section {
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+        .report-section.full-width { margin-bottom: 1.5rem; }
+
+        .section-title {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--text-muted);
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-title i { color: var(--gold); }
+
+        .report-content {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #e2e8f0;
+        }
+
+        .report-split {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        
+        .audit-checklist {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .check-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.9rem;
+        }
+        .check-item:last-child { border-bottom: none; }
+        .check-item.success { color: #34d399; }
+        .check-item.danger { color: #f87171; }
+
+        .action-section {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .recommendation-text {
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        .audit-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-audit {
+            width: 100%;
+            padding: 0.8rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .btn-audit.btn-approve {
+            background: var(--primary);
+            color: white;
+        }
+        .btn-audit.btn-approve:hover { background: #059669; }
+        
+        .btn-audit.btn-reject {
+            background: transparent;
+            border: 1px solid #f87171;
+            color: #f87171;
+        }
+        .btn-audit.btn-reject:hover { background: rgba(239, 68, 68, 0.1); }
+        
+        @media (max-width: 768px) {
+            .report-split { grid-template-columns: 1fr; }
+        }
+        
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 4rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+    <div class="background-mesh"></div>
+
+    <!-- Navigation -->
+    <nav class="glass-nav">
+        <div class="logo">
+            <i class="fa-solid fa-scale-balanced"></i>
+            <span>Modqiq | بوابة القاضي</span>
+        </div>
+        <div class="nav-links">
+            <a href="{% url 'index' %}">الرئيسية</a>
+            <a href="{% url 'about' %}">عن النظام</a>
+            <a href="#" class="active">لوحة التحكم</a>
+        </div>
+    </nav>
+
+    <main class="dashboard-container">
+        <div class="dashboard-header-page">
+            <h1>القضايا الواردة للتدقيق</h1>
+            <button class="refresh-btn" onclick="location.reload()">
+                <i class="fa-solid fa-sync"></i> تحديث القائمة
+            </button>
+        </div>
+
+        <div class="cases-grid">
+            {% for case in cases %}
+            <div class="case-card audit-card">
+                <!-- Header of the Card -->
+                <div class="audit-header">
+                    <div>
+                        <h3 class="case-title">{{ case.title }} <span style="font-size:0.8em; opacity:0.7">#{{ case.id }}</span></h3>
+                         <div class="case-meta">
+                            <i class="fa-regular fa-calendar"></i> {{ case.submission_date|date:"Y-m-d" }} | 
+                            <i class="fa-solid fa-user"></i> {{ case.plaintiff.name }}
+                        </div>
+                    </div>
+                    <div>
+                         <span class="case-status status-{{ case.status }}">
+                            {{ case.get_status_display }}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- AI Report Container -->
+                <div class="audit-report-container">
+                    
+                    <!-- Top Section: Gemini Analysis -->
+                    <div class="report-section full-width">
+                        <div class="section-title"><i class="fa-solid fa-robot"></i> التسبيب الذكي (Gemini)</div>
+                        <div class="report-content">
+                            {{ case.validation_result.generated_reasoning|default:"لم يتم توليد التسبيب بعد." }}
+                        </div>
+                    </div>
+
+                    <!-- Bottom Section: Split -->
+                    <div class="report-split">
+                        
+                        <!-- Right: Checklist -->
+                        <div class="report-section">
+                            <div class="section-title"><i class="fa-solid fa-list-check"></i> التحقق الإجرائي</div>
+                            <ul class="audit-checklist">
+                                <!-- Hardcoded Checklist for visual demo, ideally dynamic -->
+                                <li class="check-item success">
+                                    <i class="fa-solid fa-circle-check"></i> <span>التحقق من اختصاص المحكمة</span>
+                                </li>
+                                <li class="check-item {% if case.validation_result.is_accepted %}success{% else %}danger{% endif %}">
+                                    {% if case.validation_result.is_accepted %}
+                                        <i class="fa-solid fa-circle-check"></i> <span>التحقق من صحة التظلم</span>
+                                    {% else %}
+                                        <i class="fa-solid fa-circle-xmark"></i> <span>وجود خطأ في التظلم</span>
+                                    {% endif %}
+                                </li>
+                                <li class="check-item {% if case.validation_result.is_accepted %}success{% else %}danger{% endif %}">
+                                     {% if case.validation_result.is_accepted %}
+                                        <i class="fa-solid fa-circle-check"></i> <span>احتساب مدد التقادم (60 يوم)</span>
+                                     {% else %}
+                                        <i class="fa-solid fa-circle-xmark"></i> <span>تجاوز المدة النظامية</span>
+                                     {% endif %}
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Left: Recommendation & Actions -->
+                        <div class="report-section action-section">
+                            <div class="section-title"><i class="fa-solid fa-gavel"></i> التوصية التالية</div>
+                            
+                            <div class="recommendation-text">
+                                {% if case.validation_result.is_accepted %}
+                                    يمكنك قيد الدعوى رسمياً عبر منصة معين.
+                                {% else %}
+                                    يُنصح بعدم قبول الدعوى لعدم استيفاء الشروط.
+                                {% endif %}
+                            </div>
+
+                            {% if case.status == 'PENDING_JUDGE' %}
+                                <div class="audit-actions">
+                                    <button class="btn-audit btn-approve" onclick="approveCase({{ case.id }})">
+                                        تدقيق دعوى أخرى (اعتماد)
+                                    </button>
+                                    <button class="btn-audit btn-reject" onclick="rejectCase({{ case.id }})">
+                                        رفض
+                                    </button>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+                <div class="empty-state">
+                    <i class="fa-solid fa-folder-open" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                    <h3>لا يوجد قضايا حالياً</h3>
+                    <p>سيتم ظهور القضايا الجديدة هنا بعد تقديمها.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </main>
+
+    <script src="{% static 'js/judge_dashboard.js' %}"></script>
+</body>
+</html>

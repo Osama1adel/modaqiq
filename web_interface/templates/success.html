@@ -1,0 +1,106 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تم بنجاح | Modqiq</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .success-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+            text-align: center;
+            padding: 2rem;
+            color: white;
+        }
+
+        .success-icon {
+            font-size: 5rem;
+            color: #34d399;
+            margin-bottom: 2rem;
+            animation: bounceIn 1s ease;
+        }
+
+        .success-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 3rem;
+            border-radius: 20px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+
+        .success-title {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--gold);
+        }
+
+        .success-message {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #cbd5e1;
+            margin-bottom: 2rem;
+        }
+
+        .home-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--gold) 0%, #b8860b 100%);
+            color: #0f172a;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .home-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0); opacity: 0; }
+            60% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-mesh"></div>
+
+    <!-- Navigation -->
+    <nav class="glass-nav">
+        <div class="logo">
+            <i class="fa-solid fa-scale-balanced"></i>
+            <span>Modqiq | مدقق</span>
+        </div>
+    </nav>
+
+    <main class="success-container">
+        <div class="success-card">
+            <i class="fa-solid fa-circle-check success-icon"></i>
+            <h1 class="success-title">تم رفع طلبك بنجاح</h1>
+            <p class="success-message">
+                شكراً لك. تم استلام طلبك وتدقيقه آلياً.<br>
+                حالة الطلب حالياً: <strong>بانتظار اعتماد القاضي</strong>.<br>
+                سيتم إشعارك فور اتخاذ الإجراء اللازم.
+            </p>
+            <a href="{% url 'index' %}" class="home-btn">
+                <i class="fa-solid fa-house"></i> العودة للرئيسية
+            </a>
+        </div>
+    </main>
+</body>
+</html>

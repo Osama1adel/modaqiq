@@ -1,0 +1,190 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عن مُدقق | Modqiq</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* 3D Canvas Container */
+        #canvas-container {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -1;
+            background: var(--bg-dark);
+        }
+        
+        .about-content {
+            position: relative;
+            z-index: 10;
+            padding: 4rem 5%;
+            color: white;
+            backdrop-filter: blur(5px); /* Subtle blur to make text readable over 3D */
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .feature-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            padding: 2rem;
+            border-radius: 16px;
+            transition: 0.3s;
+        }
+        .feature-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-10px);
+            border-color: var(--primary);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--gold);
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- 3D Background -->
+    <div id="canvas-container"></div>
+
+    <!-- Navigation -->
+    <nav class="glass-nav">
+        <div class="logo">
+            <i class="fa-solid fa-scale-balanced"></i>
+            <span>Modqiq</span>
+        </div>
+        <div class="nav-links">
+            <a href="{% url 'index' %}">الرئيسية</a>
+            <a href="#" class="active">عن النظام</a>
+            <a href="#" class="btn-login">تسجيل دخول</a>
+        </div>
+    </nav>
+
+    <main class="about-content">
+        <header style="text-align: center; max-width: 800px; margin: 0 auto;">
+            <h1 style="font-size: 3.5rem; margin-bottom: 1.5rem;">عن نظام <span class="highlight">Modqiq</span></h1>
+            <p style="font-size: 1.2rem; line-height: 1.8; color: #cbd5e1;">
+                نظام قانوني ذكي صُمم خصيصاً للمنافسة والتميز. يهدف (Modqiq) إلى أتمتة الإجراءات الأولية في المحاكم الإدارية، 
+                من خلال فحص الشروط الشكلية للدعاوى آلياً باستخدام خوارزميات دقيقة وتقنيات الذكاء الاصطناعي التولديري.
+            </p>
+        </header>
+
+        <div class="feature-grid">
+            <div class="feature-card">
+                <i class="fa-solid fa-microchip feature-icon"></i>
+                <h3>التدقيق الشكلي الديناميكي</h3>
+                <p>محرك قواعد (Logic Engine) قابل للبرمجة للتحقق من المدد النظامية (مثل الـ 60 يوماً) والاختصاص الولائي بشكل فوري.</p>
+            </div>
+            
+            <div class="feature-card">
+                <i class="fa-solid fa-wand-magic-sparkles feature-icon"></i>
+                <h3>الذكاء الاصطناعي (Gemini)</h3>
+                <p>تحليل دلالي لنصوص الدعاوى، واستخراج التسبيب القانوني وصياغته بلغة بليغة تساعد القاضي في اتخاذ القرار.</p>
+            </div>
+
+            <div class="feature-card">
+                <i class="fa-solid fa-chart-pie feature-icon"></i>
+                <h3>لوحة المؤشرات الذكية</h3>
+                <p>واجهة بصرية (Infographic Dashboard) تعرض للقاضي نتائج الفحص ونسب القبول والملاحظات الإجرائية في لمحة واحدة.</p>
+            </div>
+             <div class="feature-card">
+                <i class="fa-solid fa-layer-group feature-icon"></i>
+                <h3>تجربة مستخدم عصرية</h3>
+                <p>تصميم SPA (Single Page Application) يضمن سرعة وسلاسة لا تضاهى، مع واجهات داكنة مريحة للعين.</p>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 5rem;">
+            <a href="{% url 'index' %}" class="btn-primary" style="text-decoration: none;">ابدأ التدقيق الآن</a>
+        </div>
+    </main>
+
+    <!-- Three.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // 3D Scene Setup
+        const scene = new THREE.Scene();
+        // Fog for depth
+        scene.fog = new THREE.FogExp2(0x0f172a, 0.002);
+
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        // Geometry: Floating Particles/Stars
+        const geometry = new THREE.BufferGeometry();
+        const vertices = [];
+        for ( let i = 0; i < 2000; i ++ ) {
+            const x = 2000 * Math.random() - 1000;
+            const y = 2000 * Math.random() - 1000;
+            const z = 2000 * Math.random() - 1000;
+            vertices.push( x, y, z );
+        }
+        geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
+        const material = new THREE.PointsMaterial( { size: 2, color: 0x3b82f6 } ); // Blue particles
+        const particles = new THREE.Points( geometry, material );
+        scene.add( particles );
+
+        // Geometry: Central Wireframe Icosahedron (Abstract Logic Core)
+        const coreGeo = new THREE.IcosahedronGeometry(10, 1); // Radius 10
+        const coreMat = new THREE.MeshBasicMaterial({ 
+            color: 0xfbbf24, // Gold
+            wireframe: true,
+            transparent: true,
+            opacity: 0.3
+        });
+        const core = new THREE.Mesh(coreGeo, coreMat);
+        scene.add(core);
+
+        // Geometry: Outer Ring
+        const ringGeo = new THREE.TorusGeometry(15, 0.2, 16, 100);
+        const ringMat = new THREE.MeshBasicMaterial({ color: 0x8b5cf6, wireframe: true });
+        const ring = new THREE.Mesh(ringGeo, ringMat);
+        ring.rotation.x = Math.PI / 2;
+        scene.add(ring);
+
+        camera.position.z = 30;
+
+        // Animation Loop
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Rotate Particles
+            particles.rotation.y += 0.0005;
+
+            // Rotate Core
+            core.rotation.x += 0.002;
+            core.rotation.y += 0.003;
+
+            // Rotate Ring
+            ring.rotation.x += 0.005;
+            ring.rotation.z += 0.002;
+
+            // Mouse Interaction (Subtle Parallax)
+            // Ideally add event listener, but for simplicity auto-rotate is enough for background
+
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Handle Resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>

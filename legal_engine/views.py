@@ -55,6 +55,10 @@ class CaseViewSet(viewsets.ModelViewSet):
                 
                 # 5. Run Gemini AI (Simulated for Hackathon/ MVP)
                 gemini = GeminiService()
+                print(f"DEBUG VIEW: Service Active? {gemini.is_active}")
+                if gemini.is_active:
+                     print(f"DEBUG VIEW: Key used: {gemini.api_key[:10]}...")
+                     print(f"DEBUG VIEW: Model used: {gemini.model.model_name}")
                 
                 # Combine Logic Output + Case Text for Gemini
                 # In real scenario: prompt = f"Case: {case.description}. Validation said: {validation_output}..."

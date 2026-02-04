@@ -13,12 +13,29 @@ class GeminiService:
     """
     
     def __init__(self):
+        # Force reload environment to ensure we get the latest file content
+        load_dotenv(override=True)
+        
+        self.api_key = os.getenv("GEMINI_API_KEY")
+
         # Configure the API
-        if GEMINI_API_KEY and GEMINI_API_KEY != "ضع_المفتاح_هنا":
-            genai.configure(api_key=GEMINI_API_KEY)
-            self.model = genai.GenerativeModel('gemini-pro')
-            self.is_active = True
+        placeholders = ["ضع_المفتاح_هنا", "YOUR_API_KEY_HERE", "", None]
+        
+        # DEBUG: Verify exactly what is being loaded
+        print(f"DEBUG: GeminiService instantiating. Key: {self.api_key[:6] if self.api_key else 'None'}...")
+        
+        if self.api_key and self.api_key not in placeholders:
+            try:
+                genai.configure(api_key=self.api_key)
+                # Switch to gemini-flash-latest as that is the available model alias
+                self.model = genai.GenerativeModel('gemini-flash-latest')
+                self.is_active = True
+                print("DEBUG: GeminiService initialized successfully with gemini-flash-latest.")
+            except Exception as e:
+                print(f"Error configuring Gemini: {e}")
+                self.is_active = False
         else:
+            print("DEBUG: GeminiService is inactive due to missing/placeholder key.")
             self.is_active = False
 
     def analyze_text(self, text: str) -> str:

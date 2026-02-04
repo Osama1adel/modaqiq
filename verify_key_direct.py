@@ -2,7 +2,7 @@ import google.generativeai as genai
 import os
 
 # The key from the screenshot and user message
-API_KEY = "AIzaSyAogh5Th2Ir3zrdS7G_WQJDsPuWUEtqh-c"
+API_KEY = 
 
 print(f"Testing Key: {API_KEY}")
 
